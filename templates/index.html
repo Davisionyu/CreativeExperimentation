@@ -12,7 +12,7 @@
       <div>
         <p class="eyebrow">智慧医疗实验系统</p>
         <h1>糖尿病风险预测</h1>
-        <p class="summary">支持单条健康指标录入，也支持 CSV / Excel 批量上传，后端调用已训练模型输出风险标签和阳性概率。</p>
+        <p class="summary">支持单条健康指标录入，也支持 CSV / Excel 批量上传，后端调用已训练模型输出风险分层和阳性概率。结果仅用于实验筛查，不等同医学诊断。</p>
       </div>
       <div class="status">
         <span>模型状态</span>
@@ -66,6 +66,7 @@
             <span>预测结果</span>
             <strong>{{ manual_result["风险标签"] }}</strong>
             <em>阳性概率：{{ manual_result["阳性概率"] }}</em>
+            <p>{{ manual_result["结果说明"] }}</p>
           </div>
         {% endif %}
       </section>

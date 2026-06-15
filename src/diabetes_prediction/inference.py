@@ -34,6 +34,26 @@ FIELD_LABELS = {
 YES_NO_COLUMNS = [column for column in FEATURE_COLUMNS if column not in {"Age", "Gender"}]
 
 
+def risk_label_from_probability(probability: float) -> str:
+    """把阳性概率转换为更适合筛查场景的风险分层。"""
+
+    if probability >= 0.7:
+        return "风险偏高"
+    if probability >= 0.5:
+        return "需关注"
+    return "风险较低"
+
+
+def risk_note_from_probability(probability: float) -> str:
+    """生成面向用户的风险解释。"""
+
+    if probability >= 0.7:
+        return "模型提示风险偏高，建议结合血糖检测和医生意见进一步确认。"
+    if probability >= 0.5:
+        return "模型结果接近判断边界，表示需要关注，不等同于已经确诊。"
+    return "模型提示当前风险较低，但仍不能替代医学检查。"
+
+
 def read_feature_table(path: Path) -> pd.DataFrame:
     """读取 CSV 或 Excel 表格。"""
 
@@ -60,12 +80,12 @@ def predict_dataframe(model, df: pd.DataFrame, include_features: bool = False) -
     """对表格数据进行预测并返回结果。"""
 
     features = normalize_input_columns(df)
-    labels = model.predict(features)
     probabilities = model.predict_proba(features)[:, 1]
 
     result = features.copy() if include_features else pd.DataFrame({"样本编号": range(1, len(features) + 1)})
-    result["风险标签"] = pd.Series(labels).map({1: "阳性", 0: "阴性"})
+    result["风险标签"] = [risk_label_from_probability(float(probability)) for probability in probabilities]
     result["阳性概率"] = probabilities.round(4)
+    result["结果说明"] = [risk_note_from_probability(float(probability)) for probability in probabilities]
     return result
 
 

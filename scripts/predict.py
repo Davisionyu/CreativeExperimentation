@@ -15,6 +15,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from diabetes_prediction.config import DEFAULT_CONFIG
+from diabetes_prediction.inference import risk_label_from_probability, risk_note_from_probability
 from diabetes_prediction.logging_utils import setup_logging
 from diabetes_prediction.modeling import load_model
 from diabetes_prediction.quantization import load_quantized_artifact, predict_with_quantized_logits
@@ -53,8 +54,9 @@ def main() -> int:
             probabilities = model.predict_proba(features)[:, 1]
 
         result = features.copy() if args.include_features else pd.DataFrame({"样本编号": range(1, len(features) + 1)})
-        result["风险标签"] = pd.Series(labels).map({1: "阳性", 0: "阴性"})
+        result["风险标签"] = [risk_label_from_probability(float(probability)) for probability in probabilities]
         result["阳性概率"] = probabilities.round(4)
+        result["结果说明"] = [risk_note_from_probability(float(probability)) for probability in probabilities]
         if "class" in result.columns:
             result = result.rename(columns={"class": "原始标签"})
         args.output.parent.mkdir(parents=True, exist_ok=True)
