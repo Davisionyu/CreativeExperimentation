@@ -1,3 +1,3 @@
 ﻿Age,Gender,Polyuria,Polydipsia,sudden weight loss,weakness,Polyphagia,Genital thrush,visual blurring,Itching,Irritability,delayed healing,partial paresis,muscle stiffness,Alopecia,Obesity,实际标签,预测标签,阳性概率
-58,Male,No,No,No,Yes,No,No,Yes,No,No,No,Yes,No,Yes,No,阳性,阴性,0.235
-34,Female,No,No,No,No,No,No,No,No,No,No,No,No,No,No,阴性,阳性,0.9366
+58,Male,No,No,No,Yes,No,No,Yes,No,No,No,Yes,No,Yes,No,阳性,阴性,0.145
+34,Female,No,No,No,No,No,No,No,No,No,No,No,No,No,No,阴性,阳性,0.9473
