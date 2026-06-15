@@ -1,24 +1,24 @@
 {
   "format": "diabetes_logistic_int8_v1",
-  "weight_scale": 0.02335941509937677,
+  "weight_scale": 0.022669521842415878,
   "weights_int8": [
-    -15,
+    -18,
     -127,
-    101,
-    112,
-    31,
-    11,
-    49,
-    41,
-    -51,
-    56,
-    28,
-    -31
+    103,
+    110,
+    36,
+    6,
+    48,
+    -9,
+    65,
+    -18,
+    21,
+    -27
   ],
-  "intercept": -0.04367575881369416,
+  "intercept": -0.17936674665676558,
   "classes": [
-    "Negative",
-    "Positive"
+    "阴性",
+    "阳性"
   ],
-  "note": "Use scripts/predict.py --quantized-model for inference; preprocessing is reused from the sklearn pipeline."
+  "note": "推理时使用 scripts/predict.py --quantized-model；预处理仍复用 sklearn 管线。"
 }

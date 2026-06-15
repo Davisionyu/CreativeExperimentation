@@ -1,4 +1,4 @@
-"""Logging helpers shared by command line scripts."""
+"""命令行脚本共用的日志工具。"""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def setup_logging(log_dir: Path, name: str = "diabetes_prediction") -> logging.Logger:
-    """Configure console and file logging for a script run."""
+    """为脚本运行配置控制台日志和文件日志。"""
 
     try:
         log_dir.mkdir(parents=True, exist_ok=True)
@@ -32,5 +32,5 @@ def setup_logging(log_dir: Path, name: str = "diabetes_prediction") -> logging.L
     except Exception as exc:
         logging.basicConfig(level=logging.INFO)
         fallback_logger = logging.getLogger(name)
-        fallback_logger.exception("Failed to initialize file logging: %s", exc)
+        fallback_logger.exception("文件日志初始化失败：%s", exc)
         return fallback_logger

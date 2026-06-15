@@ -1,4 +1,4 @@
-"""Feature preprocessing pipelines."""
+"""特征预处理流程。"""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
 def infer_feature_columns(X: pd.DataFrame) -> tuple[list[str], list[str]]:
-    """Infer numeric and categorical feature columns."""
+    """推断数值特征列和类别特征列。"""
 
     numeric_features = X.select_dtypes(include=["number"]).columns.tolist()
     categorical_features = [col for col in X.columns if col not in numeric_features]
@@ -21,7 +21,7 @@ def infer_feature_columns(X: pd.DataFrame) -> tuple[list[str], list[str]]:
 
 
 def build_preprocessor(X: pd.DataFrame, logger: logging.Logger) -> ColumnTransformer:
-    """Build preprocessing for mixed numeric and categorical health indicators."""
+    """构建适用于数值与类别混合健康指标的预处理器。"""
 
     try:
         numeric_features, categorical_features = infer_feature_columns(X)
@@ -37,7 +37,7 @@ def build_preprocessor(X: pd.DataFrame, logger: logging.Logger) -> ColumnTransfo
                 ("onehot", OneHotEncoder(drop="if_binary", handle_unknown="ignore")),
             ]
         )
-        logger.info("Numeric features=%s; categorical features=%s", numeric_features, categorical_features)
+        logger.info("数值特征=%s；类别特征=%s", numeric_features, categorical_features)
         return ColumnTransformer(
             transformers=[
                 ("num", numeric_pipeline, numeric_features),
@@ -46,11 +46,11 @@ def build_preprocessor(X: pd.DataFrame, logger: logging.Logger) -> ColumnTransfo
             remainder="drop",
         )
     except Exception:
-        logger.exception("Failed to build preprocessor")
+        logger.exception("预处理器构建失败")
         raise
 
 
 def build_feature_selector(k: int) -> SelectKBest:
-    """Select the most informative transformed features."""
+    """选择最有信息量的特征。"""
 
     return SelectKBest(score_func=mutual_info_classif, k=k)

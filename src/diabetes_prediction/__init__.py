@@ -1,3 +1,3 @@
-"""Diabetes risk prediction package."""
+"""糖尿病风险预测项目包。"""
 
 __version__ = "0.1.0"

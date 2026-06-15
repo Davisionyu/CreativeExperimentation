@@ -1,4 +1,4 @@
-"""Run inference with the trained diabetes risk prediction model."""
+"""使用训练好的糖尿病风险预测模型进行推理。"""
 
 from __future__ import annotations
 
@@ -21,11 +21,11 @@ from diabetes_prediction.quantization import load_quantized_artifact, predict_wi
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Predict diabetes risk for CSV rows.")
-    parser.add_argument("--input", type=Path, required=True, help="Input CSV containing feature columns.")
-    parser.add_argument("--output", type=Path, default=Path("reports/predictions.csv"), help="Output CSV path.")
-    parser.add_argument("--model", type=Path, default=Path("models/best_model.joblib"), help="Trained sklearn model path.")
-    parser.add_argument("--quantized-model", type=Path, default=None, help="Optional int8 logistic artifact path.")
+    parser = argparse.ArgumentParser(description="预测 CSV 中每条样本的糖尿病风险。")
+    parser.add_argument("--input", type=Path, required=True, help="输入 CSV，需包含特征列。")
+    parser.add_argument("--output", type=Path, default=Path("reports/predictions.csv"), help="输出 CSV 路径。")
+    parser.add_argument("--model", type=Path, default=Path("models/best_model.joblib"), help="已训练的 sklearn 模型路径。")
+    parser.add_argument("--quantized-model", type=Path, default=None, help="可选的 int8 量化模型路径。")
     return parser.parse_args()
 
 
@@ -34,7 +34,7 @@ def main() -> int:
     logger = setup_logging(DEFAULT_CONFIG.log_dir, "predict")
     try:
         if not args.input.exists():
-            raise FileNotFoundError(f"Input file not found: {args.input}")
+            raise FileNotFoundError(f"未找到输入文件：{args.input}")
         model = load_model(args.model, logger)
         data = pd.read_csv(args.input, encoding="utf-8-sig")
         if DEFAULT_CONFIG.target_column in data.columns:
@@ -52,15 +52,17 @@ def main() -> int:
             probabilities = model.predict_proba(features)[:, 1]
 
         result = features.copy()
-        result["risk_label"] = pd.Series(labels).map({1: "Positive", 0: "Negative"})
-        result["positive_probability"] = probabilities.round(4)
+        result["风险标签"] = pd.Series(labels).map({1: "阳性", 0: "阴性"})
+        result["阳性概率"] = probabilities.round(4)
+        if "class" in result.columns:
+            result = result.rename(columns={"class": "原始标签"})
         args.output.parent.mkdir(parents=True, exist_ok=True)
         result.to_csv(args.output, index=False, encoding="utf-8-sig")
-        logger.info("Saved predictions to %s", args.output)
-        print(json.dumps({"output": str(args.output), "rows": len(result)}, ensure_ascii=False))
+        logger.info("已保存预测结果：%s", args.output)
+        print(json.dumps({"输出文件": str(args.output), "行数": len(result)}, ensure_ascii=False))
         return 0
     except Exception as exc:
-        logger.exception("Prediction command failed: %s", exc)
+        logger.exception("推理命令失败：%s", exc)
         return 1
 
 

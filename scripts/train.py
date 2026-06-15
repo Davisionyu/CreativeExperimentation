@@ -1,4 +1,4 @@
-"""Train and evaluate diabetes risk prediction models."""
+"""训练并评估糖尿病风险预测模型。"""
 
 from __future__ import annotations
 
@@ -32,11 +32,11 @@ from diabetes_prediction.modeling import (
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train diabetes risk prediction models.")
-    parser.add_argument("--data", type=Path, default=DEFAULT_CONFIG.data_path, help="Path to CSV dataset.")
-    parser.add_argument("--model-dir", type=Path, default=DEFAULT_CONFIG.model_dir, help="Directory for model artifacts.")
-    parser.add_argument("--report-dir", type=Path, default=DEFAULT_CONFIG.report_dir, help="Directory for reports.")
-    parser.add_argument("--feature-k", type=int, default=DEFAULT_CONFIG.feature_k, help="Number of selected transformed features.")
+    parser = argparse.ArgumentParser(description="训练糖尿病风险预测模型。")
+    parser.add_argument("--data", type=Path, default=DEFAULT_CONFIG.data_path, help="CSV 数据集路径。")
+    parser.add_argument("--model-dir", type=Path, default=DEFAULT_CONFIG.model_dir, help="模型产物保存目录。")
+    parser.add_argument("--report-dir", type=Path, default=DEFAULT_CONFIG.report_dir, help="报告保存目录。")
+    parser.add_argument("--feature-k", type=int, default=DEFAULT_CONFIG.feature_k, help="保留的特征数量。")
     return parser.parse_args()
 
 
@@ -55,8 +55,8 @@ def main() -> int:
         best_name, best_search, cv_summaries = tune_models(candidates, X_train, y_train, config, logger)
         best_model = best_search.best_estimator_
 
-        validation_metrics = evaluate_model(best_model, X_valid, y_valid, "validation", logger)
-        test_metrics = evaluate_model(best_model, X_test, y_test, "test", logger)
+        validation_metrics = evaluate_model(best_model, X_valid, y_valid, "验证集", logger)
+        test_metrics = evaluate_model(best_model, X_test, y_test, "测试集", logger)
         badcases = collect_badcases(best_model, X_test, y_test, logger)
         feature_report = extract_feature_report(best_model, logger)
 
@@ -65,22 +65,22 @@ def main() -> int:
         save_model(best_model, config.model_dir / "best_model.joblib", logger)
         save_json(
             {
-                "best_model": best_name,
-                "cv_results": cv_summaries,
-                "validation_metrics": validation_metrics,
-                "test_metrics": test_metrics,
-                "data_shape": list(df.shape),
-                "selected_feature_k": config.feature_k,
+                "最优模型": best_name,
+                "交叉验证结果": cv_summaries,
+                "验证集指标": validation_metrics,
+                "测试集指标": test_metrics,
+                "数据形状": list(df.shape),
+                "特征选择数量": config.feature_k,
             },
             config.report_dir / "metrics.json",
             logger,
         )
         badcases.to_csv(config.report_dir / "badcases.csv", index=False, encoding="utf-8-sig")
         feature_report.to_csv(config.report_dir / "feature_importance.csv", index=False, encoding="utf-8-sig")
-        logger.info("Training completed successfully")
+        logger.info("训练完成")
         return 0
     except Exception as exc:
-        logger.exception("Training command failed: %s", exc)
+        logger.exception("训练命令失败：%s", exc)
         return 1
 
 

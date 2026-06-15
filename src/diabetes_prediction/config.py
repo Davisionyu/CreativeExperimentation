@@ -1,4 +1,4 @@
-"""Central project configuration."""
+"""项目统一配置。"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 
 @dataclass(frozen=True)
 class ProjectConfig:
-    """Default paths and training parameters."""
+    """默认路径和训练参数。"""
 
     data_path: Path = Path("糖尿病预测.csv")
     target_column: str = "class"

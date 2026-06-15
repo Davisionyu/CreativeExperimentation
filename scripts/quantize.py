@@ -1,4 +1,4 @@
-"""Train a compact logistic model and export int8 quantized weights."""
+"""训练轻量 Logistic 模型并导出 int8 量化权重。"""
 
 from __future__ import annotations
 
@@ -23,10 +23,10 @@ from diabetes_prediction.quantization import predict_with_quantized_logits, quan
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Export an int8 logistic regression inference model.")
-    parser.add_argument("--data", type=Path, default=DEFAULT_CONFIG.data_path, help="Path to CSV dataset.")
-    parser.add_argument("--model-output", type=Path, default=Path("models/logistic_model.joblib"), help="Sklearn logistic pipeline output.")
-    parser.add_argument("--quantized-output", type=Path, default=Path("models/logistic_int8.json"), help="Quantized model output.")
+    parser = argparse.ArgumentParser(description="导出 int8 Logistic 推理模型。")
+    parser.add_argument("--data", type=Path, default=DEFAULT_CONFIG.data_path, help="CSV 数据集路径。")
+    parser.add_argument("--model-output", type=Path, default=Path("models/logistic_model.joblib"), help="sklearn Logistic 管线输出路径。")
+    parser.add_argument("--quantized-output", type=Path, default=Path("models/logistic_int8.json"), help="量化模型输出路径。")
     return parser.parse_args()
 
 
@@ -49,26 +49,26 @@ def main() -> int:
             ]
         )
         model.fit(X_train, y_train)
-        sklearn_metrics = evaluate_model(model, X_test, y_test, "quantized_source_test", logger)
+        sklearn_metrics = evaluate_model(model, X_test, y_test, "量化源模型测试集", logger)
         artifact = quantize_logistic_pipeline(model, args.quantized_output, logger)
 
         transformed = model.named_steps["preprocess"].transform(X_test)
         selected = model.named_steps["select"].transform(transformed)
         labels, probabilities = predict_with_quantized_logits(selected, artifact)
         quantized_metrics = {
-            "accuracy": float((labels == y_test.to_numpy()).mean()),
-            "mean_positive_probability": float(probabilities.mean()),
+            "准确率": float((labels == y_test.to_numpy()).mean()),
+            "平均阳性概率": float(probabilities.mean()),
         }
         save_model(model, args.model_output, logger)
         save_json(
-            {"source_model_metrics": sklearn_metrics, "quantized_metrics": quantized_metrics},
+            {"源模型指标": sklearn_metrics, "量化模型指标": quantized_metrics},
             Path("reports/quantization_metrics.json"),
             logger,
         )
-        logger.info("Quantization completed successfully")
+        logger.info("量化完成")
         return 0
     except Exception as exc:
-        logger.exception("Quantization command failed: %s", exc)
+        logger.exception("量化命令失败：%s", exc)
         return 1
 
 
