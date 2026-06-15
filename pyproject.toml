@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "diabetes-prediction-project"
+version = "0.1.0"
+description = "Diabetes risk prediction training, inference, and quantization project."
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=2.0",
+    "scikit-learn>=1.5",
+    "joblib>=1.4",
+    "matplotlib>=3.9",
+    "seaborn>=0.13",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

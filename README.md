@@ -54,6 +54,7 @@
 
 ```bash
 pip install -r requirements.txt
+pip install -e .
 python scripts/train.py
 python scripts/quantize.py
 python scripts/predict.py --input 糖尿病预测.csv --output reports/predictions.csv
