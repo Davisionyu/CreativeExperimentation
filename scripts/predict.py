@@ -22,9 +22,9 @@ from diabetes_prediction.quantization import load_quantized_artifact, predict_wi
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="预测 CSV 中每条样本的糖尿病风险。")
-    parser.add_argument("--input", type=Path, required=True, help="输入 CSV，需包含特征列。")
-    parser.add_argument("--output", type=Path, default=Path("reports/predictions.csv"), help="输出 CSV 路径。")
-    parser.add_argument("--model", type=Path, default=Path("models/best_model.joblib"), help="已训练的 sklearn 模型路径。")
+    parser.add_argument("--input", type=Path, default=DEFAULT_CONFIG.data_path, help="输入 CSV，默认使用项目数据集。")
+    parser.add_argument("--output", type=Path, default=DEFAULT_CONFIG.report_dir / "predictions.csv", help="输出 CSV 路径。")
+    parser.add_argument("--model", type=Path, default=DEFAULT_CONFIG.model_dir / "best_model.joblib", help="已训练的 sklearn 模型路径。")
     parser.add_argument("--quantized-model", type=Path, default=None, help="可选的 int8 量化模型路径。")
     return parser.parse_args()
 

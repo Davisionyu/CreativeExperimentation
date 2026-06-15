@@ -25,8 +25,8 @@ from diabetes_prediction.quantization import predict_with_quantized_logits, quan
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="导出 int8 Logistic 推理模型。")
     parser.add_argument("--data", type=Path, default=DEFAULT_CONFIG.data_path, help="CSV 数据集路径。")
-    parser.add_argument("--model-output", type=Path, default=Path("models/logistic_model.joblib"), help="sklearn Logistic 管线输出路径。")
-    parser.add_argument("--quantized-output", type=Path, default=Path("models/logistic_int8.json"), help="量化模型输出路径。")
+    parser.add_argument("--model-output", type=Path, default=DEFAULT_CONFIG.model_dir / "logistic_model.joblib", help="sklearn Logistic 管线输出路径。")
+    parser.add_argument("--quantized-output", type=Path, default=DEFAULT_CONFIG.model_dir / "logistic_int8.json", help="量化模型输出路径。")
     return parser.parse_args()
 
 
