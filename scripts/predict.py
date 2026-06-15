@@ -26,6 +26,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, default=DEFAULT_CONFIG.report_dir / "predictions.csv", help="输出 CSV 路径。")
     parser.add_argument("--model", type=Path, default=DEFAULT_CONFIG.model_dir / "best_model.joblib", help="已训练的 sklearn 模型路径。")
     parser.add_argument("--quantized-model", type=Path, default=None, help="可选的 int8 量化模型路径。")
+    parser.add_argument("--include-features", action="store_true", help="输出完整特征列，默认只输出精简预测结果。")
     return parser.parse_args()
 
 
@@ -51,7 +52,7 @@ def main() -> int:
             labels = model.predict(features)
             probabilities = model.predict_proba(features)[:, 1]
 
-        result = features.copy()
+        result = features.copy() if args.include_features else pd.DataFrame({"样本编号": range(1, len(features) + 1)})
         result["风险标签"] = pd.Series(labels).map({1: "阳性", 0: "阴性"})
         result["阳性概率"] = probabilities.round(4)
         if "class" in result.columns:
