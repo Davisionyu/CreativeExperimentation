@@ -32,26 +32,26 @@
 
       <section id="manual" class="panel {% if active_panel == 'file' %}hidden{% endif %}">
         <form method="post" action="/predict/manual" class="grid-form" id="manualForm">
-          <label>
-            <span>年龄</span>
-            <input type="number" name="Age" min="1" max="120" value="{{ manual_form.get('Age', '45') }}" required>
-          </label>
-
-          <label>
-            <span>性别</span>
-            <select name="Gender" required>
-              <option value="Male" {% if manual_form.get('Gender') == 'Male' %}selected{% endif %}>男</option>
-              <option value="Female" {% if manual_form.get('Gender') == 'Female' %}selected{% endif %}>女</option>
-            </select>
-          </label>
-
-          {% for column in yes_no_columns %}
+          {% for column in feature_columns %}
             <label>
               <span>{{ field_labels[column] }}</span>
-              <select name="{{ column }}" required>
-                <option value="No" {% if manual_form.get(column, 'No') == 'No' %}selected{% endif %}>否</option>
-                <option value="Yes" {% if manual_form.get(column) == 'Yes' %}selected{% endif %}>是</option>
-              </select>
+              {% if column in numeric_fields %}
+                <input
+                  type="number"
+                  name="{{ column }}"
+                  min="{{ numeric_fields[column].min }}"
+                  max="{{ numeric_fields[column].max }}"
+                  step="{{ numeric_fields[column].step }}"
+                  value="{{ manual_form.get(column, numeric_fields[column].default) }}"
+                  required
+                >
+              {% else %}
+                <select name="{{ column }}" required>
+                  {% for value, label in field_options[column] %}
+                    <option value="{{ value }}" {% if manual_form.get(column) == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              {% endif %}
             </label>
           {% endfor %}
 
@@ -142,25 +142,18 @@
     const manualForm = document.getElementById("manualForm");
     if (resetManual && manualForm) {
       resetManual.addEventListener("click", () => {
-        manualForm.elements["Age"].value = "45";
-        manualForm.elements["Gender"].value = "Male";
-        [
-          "Polyuria",
-          "Polydipsia",
-          "sudden weight loss",
-          "weakness",
-          "Polyphagia",
-          "Genital thrush",
-          "visual blurring",
-          "Itching",
-          "Irritability",
-          "delayed healing",
-          "partial paresis",
-          "muscle stiffness",
-          "Alopecia",
-          "Obesity"
-        ].forEach((name) => {
-          manualForm.elements[name].value = "No";
+        const defaults = {
+          gender: "Female",
+          age: "45",
+          hypertension: "0",
+          heart_disease: "0",
+          smoking_history: "No Info",
+          bmi: "24.0",
+          HbA1c_level: "5.7",
+          blood_glucose_level: "120"
+        };
+        Object.entries(defaults).forEach(([name, value]) => {
+          manualForm.elements[name].value = value;
         });
         const result = document.querySelector(".result-strip");
         if (result) {

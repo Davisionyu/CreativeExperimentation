@@ -54,9 +54,9 @@ def build_candidate_models(X: pd.DataFrame, config: ProjectConfig, logger: loggi
                     ]
                 ),
                 {
-                    "model__n_estimators": [200, 400],
-                    "model__max_depth": [None, 6, 10],
-                    "model__min_samples_leaf": [1, 2],
+                    "model__n_estimators": [120],
+                    "model__max_depth": [8, 12],
+                    "model__min_samples_leaf": [2],
                 },
             ),
             "gradient_boosting": (
@@ -68,9 +68,9 @@ def build_candidate_models(X: pd.DataFrame, config: ProjectConfig, logger: loggi
                     ]
                 ),
                 {
-                    "model__n_estimators": [100, 200],
+                    "model__n_estimators": [80, 120],
                     "model__learning_rate": [0.05, 0.1],
-                    "model__max_depth": [2, 3],
+                    "model__max_depth": [2],
                 },
             ),
         }

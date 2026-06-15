@@ -13,23 +13,15 @@ from diabetes_prediction.config import ProjectConfig
 
 
 EXPECTED_COLUMNS = [
-    "Age",
-    "Gender",
-    "Polyuria",
-    "Polydipsia",
-    "sudden weight loss",
-    "weakness",
-    "Polyphagia",
-    "Genital thrush",
-    "visual blurring",
-    "Itching",
-    "Irritability",
-    "delayed healing",
-    "partial paresis",
-    "muscle stiffness",
-    "Alopecia",
-    "Obesity",
-    "class",
+    "gender",
+    "age",
+    "hypertension",
+    "heart_disease",
+    "smoking_history",
+    "bmi",
+    "HbA1c_level",
+    "blood_glucose_level",
+    "diabetes",
 ]
 
 
@@ -96,7 +88,11 @@ def normalize_binary_text(df: pd.DataFrame, columns: Iterable[str], logger: logg
 def split_features_target(df: pd.DataFrame, config: ProjectConfig) -> tuple[pd.DataFrame, pd.Series]:
     """分离特征和二分类目标。"""
 
-    y = df[config.target_column].map({config.positive_label: 1, "Negative": 0})
+    raw_y = df[config.target_column]
+    if pd.api.types.is_numeric_dtype(raw_y):
+        y = raw_y.astype(int)
+    else:
+        y = raw_y.map({config.positive_label: 1, "Positive": 1, "Negative": 0, "1": 1, "0": 0})
     if y.isna().any():
         unexpected = sorted(df.loc[y.isna(), config.target_column].astype(str).unique())
         raise ValueError(f"发现未预期的目标标签：{unexpected}")

@@ -62,7 +62,7 @@ def main() -> int:
         save_model(model, args.model_output, logger)
         save_json(
             {"源模型指标": sklearn_metrics, "量化模型指标": quantized_metrics},
-            Path("reports/quantization_metrics.json"),
+            config.report_dir / "quantization_metrics.json",
             logger,
         )
         logger.info("量化完成")

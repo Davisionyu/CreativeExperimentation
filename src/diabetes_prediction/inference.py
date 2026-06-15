@@ -13,25 +13,47 @@ from diabetes_prediction.data import EXPECTED_COLUMNS
 FEATURE_COLUMNS = [column for column in EXPECTED_COLUMNS if column != DEFAULT_CONFIG.target_column]
 
 FIELD_LABELS = {
-    "Age": "年龄",
-    "Gender": "性别",
-    "Polyuria": "多尿",
-    "Polydipsia": "烦渴",
-    "sudden weight loss": "突然体重下降",
-    "weakness": "乏力",
-    "Polyphagia": "多食",
-    "Genital thrush": "生殖器念珠菌感染",
-    "visual blurring": "视物模糊",
-    "Itching": "瘙痒",
-    "Irritability": "易怒",
-    "delayed healing": "伤口愈合延迟",
-    "partial paresis": "局部麻痹",
-    "muscle stiffness": "肌肉僵硬",
-    "Alopecia": "脱发",
-    "Obesity": "肥胖",
+    "gender": "性别",
+    "age": "年龄",
+    "hypertension": "高血压",
+    "heart_disease": "心脏病史",
+    "smoking_history": "吸烟史",
+    "bmi": "BMI",
+    "HbA1c_level": "糖化血红蛋白",
+    "blood_glucose_level": "血糖水平",
 }
 
-YES_NO_COLUMNS = [column for column in FEATURE_COLUMNS if column not in {"Age", "Gender"}]
+FIELD_OPTIONS = {
+    "gender": [("Female", "女"), ("Male", "男"), ("Other", "其他")],
+    "hypertension": [("0", "否"), ("1", "是")],
+    "heart_disease": [("0", "否"), ("1", "是")],
+    "smoking_history": [
+        ("No Info", "未知"),
+        ("never", "从不吸烟"),
+        ("former", "曾经吸烟"),
+        ("current", "当前吸烟"),
+        ("not current", "目前不吸烟"),
+        ("ever", "曾有吸烟史"),
+    ],
+}
+
+NUMERIC_FIELDS = {
+    "age": {"default": "45", "min": "0", "max": "120", "step": "1"},
+    "bmi": {"default": "24.0", "min": "10", "max": "80", "step": "0.1"},
+    "HbA1c_level": {"default": "5.7", "min": "3", "max": "12", "step": "0.1"},
+    "blood_glucose_level": {"default": "120", "min": "50", "max": "400", "step": "1"},
+}
+
+DEFAULT_FORM_VALUES = {
+    "gender": "Female",
+    "age": "45",
+    "hypertension": "0",
+    "heart_disease": "0",
+    "smoking_history": "No Info",
+    "bmi": "24.0",
+    "HbA1c_level": "5.7",
+    "blood_glucose_level": "120",
+}
 
 
 def risk_label_from_probability(probability: float) -> str:
@@ -95,9 +117,13 @@ def build_manual_record(form_data: dict[str, str]) -> pd.DataFrame:
     record: dict[str, object] = {}
     for column in FEATURE_COLUMNS:
         value = form_data.get(column, "").strip()
-        if column == "Age":
+        if column in NUMERIC_FIELDS:
             if not value:
-                raise ValueError("年龄不能为空。")
+                raise ValueError(f"{FIELD_LABELS.get(column, column)}不能为空。")
+            record[column] = float(value)
+        elif column in {"hypertension", "heart_disease"}:
+            if value not in {"0", "1"}:
+                raise ValueError(f"{FIELD_LABELS.get(column, column)}只能选择是或否。")
             record[column] = int(value)
         else:
             if not value:

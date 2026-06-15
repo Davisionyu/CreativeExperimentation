@@ -19,19 +19,19 @@ from diabetes_prediction.logging_utils import setup_logging
 def test_split_features_target_maps_binary_labels() -> None:
     df = pd.DataFrame(
         {
-            "Age": [40, 55],
-            "Gender": ["Male", "Female"],
-            "class": ["Positive", "Negative"],
+            "age": [40, 55],
+            "gender": ["Male", "Female"],
+            "diabetes": [1, 0],
         }
     )
     X, y = split_features_target(df, DEFAULT_CONFIG)
-    assert list(X.columns) == ["Age", "Gender"]
+    assert list(X.columns) == ["age", "gender"]
     assert y.tolist() == [1, 0]
 
 
 def test_preprocessor_transforms_mixed_features(tmp_path: Path) -> None:
     logger = setup_logging(tmp_path, "test")
-    X = pd.DataFrame({"Age": [40, 55], "Gender": ["Male", "Female"], "Polyuria": ["Yes", "No"]})
+    X = pd.DataFrame({"age": [40, 55], "gender": ["Male", "Female"], "bmi": [24.0, 31.2]})
     preprocessor = build_preprocessor(X, logger)
     transformed = preprocessor.fit_transform(X)
     assert transformed.shape[0] == 2

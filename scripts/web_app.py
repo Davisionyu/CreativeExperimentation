@@ -16,9 +16,11 @@ if str(SRC) not in sys.path:
 
 from diabetes_prediction.config import DEFAULT_CONFIG
 from diabetes_prediction.inference import (
+    DEFAULT_FORM_VALUES,
     FIELD_LABELS,
+    FIELD_OPTIONS,
     FEATURE_COLUMNS,
-    YES_NO_COLUMNS,
+    NUMERIC_FIELDS,
     build_manual_record,
     predict_dataframe,
     read_feature_table,
@@ -43,10 +45,7 @@ def _table_payload(df: pd.DataFrame) -> dict[str, object]:
 
 
 def _default_manual_form() -> dict[str, str]:
-    defaults = {column: "No" for column in YES_NO_COLUMNS}
-    defaults["Age"] = "45"
-    defaults["Gender"] = "Male"
-    return defaults
+    return DEFAULT_FORM_VALUES.copy()
 
 
 def _manual_form_from_request() -> dict[str, str]:
@@ -63,7 +62,8 @@ def index():
         "index.html",
         feature_columns=FEATURE_COLUMNS,
         field_labels=FIELD_LABELS,
-        yes_no_columns=YES_NO_COLUMNS,
+        field_options=FIELD_OPTIONS,
+        numeric_fields=NUMERIC_FIELDS,
         manual_form=_default_manual_form(),
     )
 
@@ -79,7 +79,8 @@ def predict_manual():
             "index.html",
             feature_columns=FEATURE_COLUMNS,
             field_labels=FIELD_LABELS,
-            yes_no_columns=YES_NO_COLUMNS,
+            field_options=FIELD_OPTIONS,
+            numeric_fields=NUMERIC_FIELDS,
             manual_form=manual_form,
             manual_result=result.iloc[0].to_dict(),
             active_panel="manual",
@@ -90,7 +91,8 @@ def predict_manual():
             "index.html",
             feature_columns=FEATURE_COLUMNS,
             field_labels=FIELD_LABELS,
-            yes_no_columns=YES_NO_COLUMNS,
+            field_options=FIELD_OPTIONS,
+            numeric_fields=NUMERIC_FIELDS,
             manual_form=_manual_form_from_request(),
             error=str(exc),
             active_panel="manual",
@@ -119,7 +121,8 @@ def predict_file():
             "index.html",
             feature_columns=FEATURE_COLUMNS,
             field_labels=FIELD_LABELS,
-            yes_no_columns=YES_NO_COLUMNS,
+            field_options=FIELD_OPTIONS,
+            numeric_fields=NUMERIC_FIELDS,
             manual_form=_default_manual_form(),
             file_result=_table_payload(result),
             download_ready=True,
@@ -131,7 +134,8 @@ def predict_file():
             "index.html",
             feature_columns=FEATURE_COLUMNS,
             field_labels=FIELD_LABELS,
-            yes_no_columns=YES_NO_COLUMNS,
+            field_options=FIELD_OPTIONS,
+            numeric_fields=NUMERIC_FIELDS,
             manual_form=_default_manual_form(),
             error=str(exc),
             active_panel="file",
