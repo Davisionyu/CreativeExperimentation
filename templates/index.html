@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>糖尿病风险预测</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">智慧医疗实验系统</p>
+        <h1>糖尿病风险预测</h1>
+        <p class="summary">支持单条健康指标录入，也支持 CSV / Excel 批量上传，后端调用已训练模型输出风险标签和阳性概率。</p>
+      </div>
+      <div class="status">
+        <span>模型状态</span>
+        <strong>已加载最优模型</strong>
+      </div>
+    </section>
+
+    {% if error %}
+      <p class="alert">{{ error }}</p>
+    {% endif %}
+
+    <section class="workspace">
+      <nav class="tabs" aria-label="预测方式">
+        <button class="tab-button {% if active_panel != 'file' %}active{% endif %}" data-panel="manual">手动填写</button>
+        <button class="tab-button {% if active_panel == 'file' %}active{% endif %}" data-panel="file">上传表格</button>
+      </nav>
+
+      <section id="manual" class="panel {% if active_panel == 'file' %}hidden{% endif %}">
+        <form method="post" action="/predict/manual" class="grid-form">
+          <label>
+            <span>年龄</span>
+            <input type="number" name="Age" min="1" max="120" value="45" required>
+          </label>
+
+          <label>
+            <span>性别</span>
+            <select name="Gender" required>
+              <option value="Male">男</option>
+              <option value="Female">女</option>
+            </select>
+          </label>
+
+          {% for column in yes_no_columns %}
+            <label>
+              <span>{{ field_labels[column] }}</span>
+              <select name="{{ column }}" required>
+                <option value="No">否</option>
+                <option value="Yes">是</option>
+              </select>
+            </label>
+          {% endfor %}
+
+          <button type="submit" class="primary-action">预测风险</button>
+        </form>
+
+        {% if manual_result %}
+          <div class="result-strip">
+            <span>预测结果</span>
+            <strong>{{ manual_result["风险标签"] }}</strong>
+            <em>阳性概率：{{ manual_result["阳性概率"] }}</em>
+          </div>
+        {% endif %}
+      </section>
+
+      <section id="file" class="panel {% if active_panel != 'file' %}hidden{% endif %}">
+        <form method="post" action="/predict/file" enctype="multipart/form-data" class="upload-form">
+          <label class="upload-box">
+            <span>选择 CSV / Excel 文件</span>
+            <input type="file" name="data_file" accept=".csv,.xlsx,.xlsm" required>
+          </label>
+          <button type="submit" class="primary-action">批量预测</button>
+        </form>
+
+        {% if file_result %}
+          <div class="table-headline">
+            <p>共 {{ file_result.total_rows }} 条预测结果，页面预览前 30 条。</p>
+            {% if download_ready %}
+              <a href="/download" class="download-link">下载结果 CSV</a>
+            {% endif %}
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  {% for column in file_result.columns %}
+                    <th>{{ column }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in file_result.rows %}
+                  <tr>
+                    {% for column in file_result.columns %}
+                      <td>{{ row[column] }}</td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </section>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll(".tab-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".tab-button").forEach((item) => item.classList.remove("active"));
+        document.querySelectorAll(".panel").forEach((panel) => panel.classList.add("hidden"));
+        button.classList.add("active");
+        document.getElementById(button.dataset.panel).classList.remove("hidden");
+      });
+    });
+  </script>
+</body>
+</html>

@@ -59,6 +59,7 @@ python scripts/train.py
 python scripts/quantize.py
 python scripts/predict.py --input 糖尿病预测.csv --output reports/predictions.csv
 python scripts/predict.py --input 糖尿病预测.csv --model models/logistic_model.joblib --quantized-model models/logistic_int8.json --output reports/predictions_int8.csv
+python scripts/web_app.py
 pytest
 ```
 
@@ -76,6 +77,14 @@ pytest
 ```bash
 python scripts/predict.py --input 糖尿病预测.csv --output reports/predictions.csv
 ```
+
+启动前后端页面：
+
+```bash
+python scripts/web_app.py
+```
+
+浏览器访问 `http://127.0.0.1:5000`。页面支持手动填写单条健康指标，也支持上传 CSV、XLSX 或 XLSM 表格进行批量预测，批量结果可下载为 CSV。
 
 量化推理：
 
