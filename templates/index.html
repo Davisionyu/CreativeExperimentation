@@ -78,10 +78,15 @@
 
         {% if file_result %}
           <div class="table-headline">
-            <p>共 {{ file_result.total_rows }} 条预测结果，页面预览前 30 条。</p>
-            {% if download_ready %}
-              <a href="/download" class="download-link">下载结果 CSV</a>
-            {% endif %}
+            <p>共 {{ file_result.total_rows }} 条预测结果，页面默认预览前 30 条。</p>
+            <div class="table-actions">
+              {% if file_result.total_rows > 30 %}
+                <button type="button" class="ghost-action" id="toggleRows">显示全部</button>
+              {% endif %}
+              {% if download_ready %}
+                <a href="/download" class="download-link">下载结果 CSV</a>
+              {% endif %}
+            </div>
           </div>
           <div class="table-wrap">
             <table>
@@ -94,7 +99,7 @@
               </thead>
               <tbody>
                 {% for row in file_result.rows %}
-                  <tr>
+                  <tr class="{% if loop.index > 30 %}extra-row hidden-row{% endif %}">
                     {% for column in file_result.columns %}
                       <td>{{ row[column] }}</td>
                     {% endfor %}
@@ -117,6 +122,17 @@
         document.getElementById(button.dataset.panel).classList.remove("hidden");
       });
     });
+
+    const toggleRows = document.getElementById("toggleRows");
+    if (toggleRows) {
+      toggleRows.addEventListener("click", () => {
+        const rows = document.querySelectorAll(".extra-row");
+        const shouldShow = toggleRows.dataset.expanded !== "true";
+        rows.forEach((row) => row.classList.toggle("hidden-row", !shouldShow));
+        toggleRows.dataset.expanded = shouldShow ? "true" : "false";
+        toggleRows.textContent = shouldShow ? "收起预览" : "显示全部";
+      });
+    }
   </script>
 </body>
 </html>

@@ -35,10 +35,9 @@ def _load_best_model():
 
 
 def _table_payload(df: pd.DataFrame) -> dict[str, object]:
-    preview = df.head(30)
     return {
-        "columns": preview.columns.tolist(),
-        "rows": preview.to_dict(orient="records"),
+        "columns": df.columns.tolist(),
+        "rows": df.to_dict(orient="records"),
         "total_rows": len(df),
     }
 
