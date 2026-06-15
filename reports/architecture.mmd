@@ -1,0 +1,10 @@
+flowchart LR
+    A["Raw CSV: 糖尿病预测.csv"] --> B["Data Validation"]
+    B --> C["Preprocessing: impute, scale, one-hot encode"]
+    C --> D["Feature Selection: mutual information"]
+    D --> E["Model Tuning: LR / RF / GB"]
+    E --> F["Best Model Artifact"]
+    F --> G["Inference Script"]
+    F --> H["Metrics and Badcase Analysis"]
+    C --> I["Logistic Model"]
+    I --> J["Int8 Quantized Weights"]

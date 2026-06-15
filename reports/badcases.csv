@@ -1,0 +1,5 @@
+﻿Age,Gender,Polyuria,Polydipsia,sudden weight loss,weakness,Polyphagia,Genital thrush,visual blurring,Itching,Irritability,delayed healing,partial paresis,muscle stiffness,Alopecia,Obesity,actual,predicted,positive_probability
+42,Male,No,No,No,Yes,Yes,No,No,No,Yes,No,No,Yes,No,No,Positive,Negative,0.4121
+58,Male,No,No,No,Yes,No,No,Yes,No,No,No,Yes,No,Yes,No,Positive,Negative,0.2785
+34,Female,No,No,No,No,No,No,No,No,No,No,No,No,No,No,Negative,Positive,0.7157
+47,Male,No,Yes,No,No,No,No,Yes,Yes,No,No,No,No,Yes,Yes,Positive,Negative,0.4752
