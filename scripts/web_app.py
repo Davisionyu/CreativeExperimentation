@@ -42,6 +42,21 @@ def _table_payload(df: pd.DataFrame) -> dict[str, object]:
     }
 
 
+def _default_manual_form() -> dict[str, str]:
+    defaults = {column: "No" for column in YES_NO_COLUMNS}
+    defaults["Age"] = "45"
+    defaults["Gender"] = "Male"
+    return defaults
+
+
+def _manual_form_from_request() -> dict[str, str]:
+    form_values = _default_manual_form()
+    for column in FEATURE_COLUMNS:
+        if column in request.form:
+            form_values[column] = request.form.get(column, "")
+    return form_values
+
+
 @app.get("/")
 def index():
     return render_template(
@@ -49,6 +64,7 @@ def index():
         feature_columns=FEATURE_COLUMNS,
         field_labels=FIELD_LABELS,
         yes_no_columns=YES_NO_COLUMNS,
+        manual_form=_default_manual_form(),
     )
 
 
@@ -58,11 +74,13 @@ def predict_manual():
         model = _load_best_model()
         input_df = build_manual_record(request.form)
         result = predict_dataframe(model, input_df)
+        manual_form = _manual_form_from_request()
         return render_template(
             "index.html",
             feature_columns=FEATURE_COLUMNS,
             field_labels=FIELD_LABELS,
             yes_no_columns=YES_NO_COLUMNS,
+            manual_form=manual_form,
             manual_result=result.iloc[0].to_dict(),
             active_panel="manual",
         )
@@ -73,6 +91,7 @@ def predict_manual():
             feature_columns=FEATURE_COLUMNS,
             field_labels=FIELD_LABELS,
             yes_no_columns=YES_NO_COLUMNS,
+            manual_form=_manual_form_from_request(),
             error=str(exc),
             active_panel="manual",
         ), 400
@@ -101,6 +120,7 @@ def predict_file():
             feature_columns=FEATURE_COLUMNS,
             field_labels=FIELD_LABELS,
             yes_no_columns=YES_NO_COLUMNS,
+            manual_form=_default_manual_form(),
             file_result=_table_payload(result),
             download_ready=True,
             active_panel="file",
@@ -112,6 +132,7 @@ def predict_file():
             feature_columns=FEATURE_COLUMNS,
             field_labels=FIELD_LABELS,
             yes_no_columns=YES_NO_COLUMNS,
+            manual_form=_default_manual_form(),
             error=str(exc),
             active_panel="file",
         ), 400

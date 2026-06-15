@@ -31,17 +31,17 @@
       </nav>
 
       <section id="manual" class="panel {% if active_panel == 'file' %}hidden{% endif %}">
-        <form method="post" action="/predict/manual" class="grid-form">
+        <form method="post" action="/predict/manual" class="grid-form" id="manualForm">
           <label>
             <span>年龄</span>
-            <input type="number" name="Age" min="1" max="120" value="45" required>
+            <input type="number" name="Age" min="1" max="120" value="{{ manual_form.get('Age', '45') }}" required>
           </label>
 
           <label>
             <span>性别</span>
             <select name="Gender" required>
-              <option value="Male">男</option>
-              <option value="Female">女</option>
+              <option value="Male" {% if manual_form.get('Gender') == 'Male' %}selected{% endif %}>男</option>
+              <option value="Female" {% if manual_form.get('Gender') == 'Female' %}selected{% endif %}>女</option>
             </select>
           </label>
 
@@ -49,13 +49,16 @@
             <label>
               <span>{{ field_labels[column] }}</span>
               <select name="{{ column }}" required>
-                <option value="No">否</option>
-                <option value="Yes">是</option>
+                <option value="No" {% if manual_form.get(column, 'No') == 'No' %}selected{% endif %}>否</option>
+                <option value="Yes" {% if manual_form.get(column) == 'Yes' %}selected{% endif %}>是</option>
               </select>
             </label>
           {% endfor %}
 
-          <button type="submit" class="primary-action">预测风险</button>
+          <div class="form-actions">
+            <button type="submit" class="primary-action">预测风险</button>
+            <button type="button" class="ghost-action" id="resetManual">重置</button>
+          </div>
         </form>
 
         {% if manual_result %}
@@ -131,6 +134,37 @@
         rows.forEach((row) => row.classList.toggle("hidden-row", !shouldShow));
         toggleRows.dataset.expanded = shouldShow ? "true" : "false";
         toggleRows.textContent = shouldShow ? "收起预览" : "显示全部";
+      });
+    }
+
+    const resetManual = document.getElementById("resetManual");
+    const manualForm = document.getElementById("manualForm");
+    if (resetManual && manualForm) {
+      resetManual.addEventListener("click", () => {
+        manualForm.elements["Age"].value = "45";
+        manualForm.elements["Gender"].value = "Male";
+        [
+          "Polyuria",
+          "Polydipsia",
+          "sudden weight loss",
+          "weakness",
+          "Polyphagia",
+          "Genital thrush",
+          "visual blurring",
+          "Itching",
+          "Irritability",
+          "delayed healing",
+          "partial paresis",
+          "muscle stiffness",
+          "Alopecia",
+          "Obesity"
+        ].forEach((name) => {
+          manualForm.elements[name].value = "No";
+        });
+        const result = document.querySelector(".result-strip");
+        if (result) {
+          result.classList.add("hidden");
+        }
       });
     }
   </script>
